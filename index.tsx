@@ -885,11 +885,15 @@ const App: FC = () => {
           });
       });
 
-      setChats(parsedChats);
-      if (savedActiveId && parsedChats.some((c: ChatSession) => c.id === savedActiveId)) {
-        setActiveChatId(savedActiveId);
-      } else if (parsedChats.length > 0) {
-        setActiveChatId(parsedChats[0].id);
+      const existingEmptyChat = parsedChats.find(c => c.messages.length === 0);
+
+      if (existingEmptyChat) {
+          setChats(parsedChats);
+          setActiveChatId(existingEmptyChat.id);
+      } else {
+          const newChat: ChatSession = { id: Date.now().toString(), title: 'New Chat', messages: [] };
+          setChats([newChat, ...parsedChats]);
+          setActiveChatId(newChat.id);
       }
     } else {
       handleNewChat();
@@ -1020,9 +1024,12 @@ const App: FC = () => {
         setActiveChatId(newChat.id);
     } else {
         if (activeChatId === chatToDelete) {
-            setActiveChatId(remainingChats[0].id);
+            const newChat: ChatSession = { id: Date.now().toString(), title: 'New Chat', messages: [] };
+            setChats([newChat, ...remainingChats]);
+            setActiveChatId(newChat.id);
+        } else {
+            setChats(remainingChats);
         }
-        setChats(remainingChats);
     }
     
     setChatToDelete(null);
