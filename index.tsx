@@ -67,7 +67,7 @@ const WelcomeModal: FC<{
   return (
     <div className="modal-backdrop" onClick={handleClose} role="dialog" aria-modal="true" aria-labelledby="welcome-modal-title">
       <div className="modal-content welcome-modal" onClick={e => e.stopPropagation()}>
-        <h2 id="welcome-modal-title">Welcome to Multi-Agent Chat!</h2>
+        <h2 id="welcome-modal-title">Welcome to Multi-Agent Chat by Fadlay!</h2>
         <p>This isn't your typical chatbot. Here's a quick look at the powerful features at your disposal:</p>
         <ul className="features-list">
             <li><strong>🧠 Multi-Agent System:</strong> Your prompts are processed by a team of AI agents that collaborate, critique, and refine their answers to give you the most comprehensive response.</li>
