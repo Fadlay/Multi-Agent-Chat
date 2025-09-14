@@ -7,7 +7,7 @@
 :root {
   --background-color: #f0f4f9;
   --app-background: #ffffff;
-  --sidebar-bg: #f8f9fa;
+  --sidebar-bg: #ffffff;
   --sidebar-border: #e0e0e0;
   --history-hover-bg: #e8eaed;
   --history-active-bg: #d1e3ff;
@@ -41,7 +41,7 @@
 html[data-theme='dark'] {
   --background-color: #131314;
   --app-background: #1E1F20;
-  --sidebar-bg: #1E1F20;
+  --sidebar-bg: #282a2d;
   --sidebar-border: #1E1F20;
   --history-hover-bg: #2D2F34;
   --history-active-bg: #1E1F20;
