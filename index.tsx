@@ -1274,7 +1274,17 @@ const App: FC = () => {
 
     } catch (error) {
       console.error('Error sending message to agents:', error);
-      const errorMessageText = error instanceof Error ? error.message : 'Sorry, I encountered an error. Please try again.';
+      let errorMessageText = 'Sorry, I encountered an error. Please try again.';
+      if (error instanceof Error) {
+        if (error.message.includes("RESOURCE_EXHAUSTED")) {
+            errorMessageText = "Anda telah melebihi kuota API Anda saat ini. Silakan periksa paket dan detail tagihan Anda, atau coba lagi nanti.";
+        } else if (error.message.includes("API key not valid")) {
+            errorMessageText = "API key tidak valid. Silakan periksa kembali API key Anda di pengaturan.";
+        }
+        else {
+            errorMessageText = `Terjadi kesalahan: ${error.message}`;
+        }
+      }
       const errorMessage: Message = { role: 'model', parts: [{ text: errorMessageText }] };
       setChats(prev => prev.map(c => c.id === activeChatId ? { ...c, messages: [...c.messages, errorMessage] } : c));
     } finally {
