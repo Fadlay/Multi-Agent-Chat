@@ -73,7 +73,7 @@ const WelcomeModal: FC<{
             <li><strong>🧠 Multi-Agent System:</strong> Your prompts are processed by a team of AI agents that collaborate, critique, and refine their answers to give you the most comprehensive response.</li>
             <li><strong>📝 Smart Memory:</strong> The AI can remember key details about you across conversations. Manage what it remembers using the settings icon (⚙️).</li>
             <li><strong>📎 File Attachments:</strong> Attach images, documents, and other files for the agents to analyze and discuss.</li>
-            <li><strong>🖼️ Image Editing:</strong> Switch to the "Image Preview" model to edit images with text prompts.</li>
+            <li><strong>🖼️ Image Editing:</strong> Switch to the "Nano Banana" model to edit images with text prompts.</li>
             <li><strong>⚠️ API Usage Note:</strong> The multi-agent system makes multiple calls per prompt, which can consume your API rate limit quickly.</li>
         </ul>
         <div className="modal-footer">
@@ -765,7 +765,7 @@ const App: FC = () => {
   const [memory, setMemory] = useState<string[]>([]);
   const [isMemoryModalOpen, setIsMemoryModalOpen] = useState(false);
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
-  const [model, setModel] = useState<string>('gemini-1.5-flash');
+  const [model, setModel] = useState<string>('gemini-2.5-flash');
   const [apiKey, setApiKey] = useState<string>('');
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -1077,7 +1077,7 @@ const App: FC = () => {
       }
       const ai = new GoogleGenAI({ apiKey: finalApiKey });
       const prompt = `Generate a very short, concise title (4 words max) for a conversation starting with this message: "${userInput}". Do not include quotes or any preamble in your response.`;
-      const result = await ai.models.generateContent({ model: 'gemini-1.5-flash', contents: prompt });
+      const result = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
       const title = result.text.trim().replace(/"/g, ''); // Remove quotes
       setChats(prev => prev.map(c => c.id === chatId ? { ...c, title } : c));
     } catch (error) {
@@ -1218,7 +1218,7 @@ const App: FC = () => {
           if (!userInput.trim()) return;
           try {
             const memoryHistory: Content[] = [...mainChatHistory, { role: 'user', parts: [{ text: userInput }] }];
-            const response = await ai.models.generateContent({ model: 'gemini-1.5-flash', contents: memoryHistory, config: { systemInstruction: MEMORY_AGENT_SYSTEM_INSTRUCTION } });
+            const response = await ai.models.generateContent({ model: 'gemini-2.5-flash-lite', contents: memoryHistory, config: { systemInstruction: MEMORY_AGENT_SYSTEM_INSTRUCTION } });
             const memoryText = response.text.trim();
             if (memoryText && memoryText !== 'NO_UPDATE') newMemory = memoryText;
           } catch (e) { console.error("Memory agent failed", e); }
@@ -1370,7 +1370,7 @@ const App: FC = () => {
                 <select id="model-selector" className="model-selector" value={model} onChange={(e) => setModel(e.target.value)}>
                     <option value="gemini-2.5-pro">Pro</option>
                     <option value="gemini-2.5-flash">Flash</option>
-                    <option value="gemini-2.5-flash-lite">Flash lite</option>
+                    <option value="gemini-2.5-flash-lite">Flash Lite</option>
                     <option value="gemini-2.5-flash-image-preview">Nano Banana</option>
                 </select>
             </div>
