@@ -728,6 +728,8 @@ const GroundingCitations: FC<{ chunks: any[] }> = ({ chunks }) => {
     );
 };
 
+
+
 const ApiKeyPrompt: FC<{ onSettingsClick: () => void }> = ({ onSettingsClick }) => {
   return (
     <div className="api-key-prompt">
@@ -787,6 +789,7 @@ const App: FC = () => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isGroundingEnabled, setIsGroundingEnabled] = useState(false);
+  
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const dragCounter = useRef(0);
   const messageListRef = useRef<HTMLDivElement>(null);
@@ -1112,6 +1115,35 @@ const App: FC = () => {
     setAttachment(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
+  const handleCopy = async (message: Message, format: 'text' | 'markdown') => {
+    const content = message.parts.map(part => 'text' in part ? part.text : '').join('');
+    let textToCopy = '';
+
+    if (format === 'markdown') {
+      textToCopy = content;
+    } else {
+      // Basic markdown to text conversion
+      textToCopy = content
+        .replace(/#+\s/g, '') // Headers
+        .replace(/(\*\*|__)(.*?)\1/g, '$2') // Bold
+        .replace(/(\*|_)(.*?)\1/g, '$2') // Italic
+        .replace(/`{1,3}(.*?)`{1,3}/g, '$1') // Inline code and code blocks
+        .replace(/!\[(.*?)\]\(.*?\)/g, '$1') // Images
+        .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Links
+        .replace(/>\s/g, '') // Blockquotes
+        .replace(/-\s/g, '') // List items
+        .replace(/\n{2,}/g, '\n') // Multiple newlines
+        .trim();
+    }
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      // You can add a toast notification here to confirm copy
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
   
   // Fix: Helper to build API history by converting File objects to Parts on the fly.
   const buildApiHistory = (messages: Message[]): Promise<Content[]> => {
@@ -1398,9 +1430,32 @@ const App: FC = () => {
               {messages.map((msg, index) => (
                 <div key={index} className={`message-wrapper ${msg.role}`}>
                   <div className={`message ${msg.role}`}>
-                    {msg.role === 'model' && <span className="agent-label">Synthesizer Agent</span>}
-                    <MessageContent parts={msg.parts} file={msg.file} attachmentName={msg.attachmentName} />
+                    <div className="message-content-wrapper">
+                      {msg.role === 'model' && <span className="agent-label">Synthesizer Agent</span>}
+                      <MessageContent parts={msg.parts} file={msg.file} attachmentName={msg.attachmentName} />
+                    </div>
                   </div>
+                  {msg.role === 'model' && (
+                    <div className="message-actions-wrapper">
+                      <div className="message-actions-toolbar">
+                        <button onClick={() => handleCopy(msg, 'text')} className="icon-button" aria-label="Copy as text" title="Copy as text">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                          </svg>
+                        </button>
+                        <button onClick={() => handleCopy(msg, 'markdown')} className="icon-button" aria-label="Copy as markdown" title="Copy as markdown">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                              <polyline points="14 2 14 8 20 8"></polyline>
+                              <line x1="16" y1="13" x2="8" y2="13"></line>
+                              <line x1="16" y1="17" x2="8" y2="17"></line>
+                              <polyline points="10 9 9 9 8 9"></polyline>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   {msg.groundingChunks && msg.groundingChunks.length > 0 && (
                     <GroundingCitations chunks={msg.groundingChunks} />
                   )}

@@ -1644,3 +1644,20 @@ html[data-theme='dark'] .search-modal-content {
         right: 1rem;
     }
 }
+
+.message-actions-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  margin-left: -1rem;
+}
+
+.message-actions-toolbar .icon-button {
+  padding: 0.25rem;
+}
+
+.message-actions-toolbar .icon-button svg {
+  width: 16px;
+  height: 16px;
+}
