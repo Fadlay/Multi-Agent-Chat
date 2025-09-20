@@ -4,6 +4,9 @@ import { createRoot } from 'react-dom/client';
 import { GoogleGenAI, Content, Part, Modality } from '@google/genai';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css'; 
 
 // Fix: Add a minimal interface for the SpeechRecognition API to resolve TypeScript type errors.
 interface SpeechRecognition {
@@ -633,7 +636,8 @@ const MessageContent: FC<{ parts: Part[]; file?: File; attachmentName?: string }
           return (
             <ReactMarkdown
               key={index}
-              remarkPlugins={[remarkGfm]}
+              remarkPlugins={[remarkGfm, remarkMath]}
+              rehypePlugins={[rehypeKatex]}
               components={{ code(props) { return <CodeBlock>{String(props.children)}</CodeBlock>; } }}
             >
               {part.text}
